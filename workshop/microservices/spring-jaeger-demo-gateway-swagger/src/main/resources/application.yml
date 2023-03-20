@@ -1,0 +1,28 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: User management
+          uri: ${USER_MANAGEMENT_API:http://localhost:8081}
+          predicates:
+            - Path=/apidocs/users/**
+          filters:
+            - RewritePath=/apidocs/users/(?<path>.*), /$\{path}
+        - id: User roles
+          uri: ${USER_ROLES_API:http://localhost:8081}
+          predicates:
+            - Path=/apidocs/roles/**
+          filters:
+            - RewritePath=/apidocs/roles/(?<path>.*), /$\{path}
+        - id: User discounts
+          uri: ${USER_DISCOUNTS_API:http://localhost:8081}
+          predicates:
+            - Path=/apidocs/discounts/**
+          filters:
+            - RewritePath=/apidocs/discounts/(?<path>.*), /$\{path}
+
+

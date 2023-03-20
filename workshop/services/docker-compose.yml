@@ -1,0 +1,181 @@
+services:
+  jaegerallinone:
+    image: jaegertracing/all-in-one:1.25
+    ports:
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 16686:16686
+      - 14268:14268
+  otelcollector:
+    image: otel/opentelemetry-collector:0.47.0
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+    volumes:
+      - ./otel-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "1888:1888"   # pprof extension
+      - "13133:13133" # health_check extension
+      - "4317:4317"        # OTLP gRPC receiver
+      - "55670:55679" # zpages extension
+    depends_on:
+      - jaegerallinone
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8000:8080
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_METRICS_PORT: 9997
+      DYNAMIC_CONFIG_ENABLED: 'true'  # not necessary, added for tests
+
+  mongodb:
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=citizix
+      - MONGO_INITDB_ROOT_PASSWORD=S3cret
+      - MONGO_INITDB_DATABASE=test_db
+
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    environment:
+      - TRAEFIK_ENTRYPOINTS_WEB=web
+      - TRAEFIK_ENTRYPOINTS_WEB_ADDRESS=:80
+      - TRAEFIK_API_INSECURE=true # Enable Dashboard
+      - TRAEFIK_PROVIDERS_DOCKER=true # Enable Docker Provider
+      - TRAEFIK_LOG_LEVEL=INFO # Set Log level to INFO
+      - TRAEFIK_TRACING=true # Enable Tracing
+      - TRAEFIK_TRACING_SERVICENAME=traefik
+      - TRAEFIK_TRACING_LOCALAGENTHOSTPORT=jaegerallinone:6831    
+      - TRAEFIK_TRACING_JAEGER_SAMPLINGPARAM=0 # Set the Jaeger sampling parameter
+      - TRAEFIK_TRACING_JAEGER_PROPAGATION=b3 # Set the Jaeger sampling parameter
+
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--tracing.jaeger=true"
+      - "--tracing.jaeger.localAgentHostPort=jaegerallinone:6831"
+      - "--tracing.jaeger.gen128Bit"
+      - "--tracing.jaeger.propagation=b3"
+      - "--tracing.jaeger.collector.endpoint=http://jaegerallinone:14268/api/traces?format=jaeger.thrift"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  
+  apidocs:
+    image: "demo-apidocs"
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - 'traefik.http.routers.apidocs.rule=PathPrefix(`/swagger-ui`) || PathPrefix(`/swagger-resources`) || PathPrefix(`/apidocs`)'
+      - "traefik.http.routers.apidocs.entrypoints=web"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
+
+  userroles:
+    image: "demo-userroles"
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.userroles.rule=PathPrefix(`/api/v1/roles`)"
+      - "traefik.http.middlewares.rolesapi-replacepathregex.replacepathregex.regex=/api/v1/roles(.*)"
+      - 'traefik.http.middlewares.rolesapi-replacepathregex.replacepathregex.replacement=/api/v1/roles$1'
+      - "traefik.http.routers.userroles.middlewares=rolesapi-replacepathregex"
+      - "traefik.http.routers.userroles.entrypoints=web"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
+  usermanagement:
+    image: "demo-usermanagement"
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.usermanagement.rule=PathPrefix(`/api/v1/users`)"
+      - "traefik.http.middlewares.usermngmntapi-replacepathregex.replacepathregex.regex=/api/v1/users(.*)"
+      - 'traefik.http.middlewares.usermngmntapi-replacepathregex.replacepathregex.replacement=/api/v1/users$1'
+      - "traefik.http.routers.usermanagement.middlewares=usermngmntapi-replacepathregex"
+      - "traefik.http.routers.usermanagement.entrypoints=web"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
+  userdiscounts:
+    image: "demo-userdiscounts"
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.userdiscounts.rule=PathPrefix(`/api/v1/discounts`)"
+      - "traefik.http.middlewares.userdiscountsapi-replacepathregex.replacepathregex.regex=/api/v1/discounts(.*)"
+      - 'traefik.http.middlewares.userdiscountsapi-replacepathregex.replacepathregex.replacement=/api/v1/discounts$1'
+      - "traefik.http.routers.userdiscounts.middlewares=userdiscountsapi-replacepathregex"
+      - "traefik.http.routers.userdiscounts.entrypoints=web"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: httpd.access
+
+  fluentd:
+    build: ./fluentd
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    links:
+      - "elasticsearch"
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.2
+    environment:
+      discovery.type: "single-node"
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      xpack.security.enabled: "false"
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.3.2
+    links:
+      - "elasticsearch"
+    ports:
+      - "5601:5601"
