@@ -22,6 +22,14 @@ class UserController(
         return userService.createUser(createUserCommand = createUserCommand)
     }
 
+    @PostMapping("/premium")
+    fun createPremiumUser(
+        createUserCommand: CreateUserCommand
+    ): Mono<User> {
+        logger.info("Creating new user with discount $createUserCommand")
+        return userService.createUser(createUserCommand = createUserCommand, premium = true)
+    }
+
     @GetMapping
     fun listUsers(): Flux<User> {
         logger.info("Listing users")

@@ -22,7 +22,7 @@ services:
   mongodb:
     container_name: mongodb
     ports:
-      - "27018:27017"
+      - "27017:27017"
     image: mongo:latest
     environment:
       - MONGO_INITDB_ROOT_USERNAME=citizix

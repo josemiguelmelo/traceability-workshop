@@ -21,7 +21,6 @@ class UserDiscountsService(
         return Flux.fromIterable(discounts)
     }
 
-
     fun addDiscountForUser(userId: String, discountPercentage: Int) {
         val discountCode = couponCodeAPIOkhttpRepository.getRandomCouponCode()
             ?: throw Exception("Failed to generate discount code")

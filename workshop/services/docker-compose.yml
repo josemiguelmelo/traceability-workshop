@@ -1,6 +1,11 @@
 services:
   jaegerallinone:
     image: jaegertracing/all-in-one:1.25
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jaeger.rule=(Host(`jaeger.traceability.josemiguelmelo.com`) || Host(`jaeger.traceability.localhost`))"
+      - "traefik.http.routers.jaeger.entrypoints=web"
+      - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
     ports:
       - 6831:6831/udp
       - 6832:6832/udp
@@ -47,6 +52,11 @@ services:
       - 8000:8080
     depends_on:
       - kafka
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kafka.rule=(Host(`kafka.traceability.josemiguelmelo.com`) || Host(`kafka.traceability.localhost`))"
+      - "traefik.http.routers.kafka.entrypoints=web"
+      - "traefik.http.services.kafka.loadbalancer.server.port=8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
@@ -94,14 +104,27 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  docs:
+    image: squidfunk/mkdocs-material
+    volumes:
+      - ./docs:/docs
+    labels:
+      - "traefik.enable=true"
+      - 'traefik.http.routers.documentation.rule=(Host(`docs.traceability.josemiguelmelo.com`) || Host(`docs.traceability.localhost`))'
+      - "traefik.http.routers.documentation.entrypoints=web"
+    ports:
+      - 7100:8000
   
   apidocs:
     image: "demo-apidocs"
     env_file: .env
     labels:
       - "traefik.enable=true"
-      - 'traefik.http.routers.apidocs.rule=PathPrefix(`/swagger-ui`) || PathPrefix(`/swagger-resources`) || PathPrefix(`/apidocs`)'
+      - 'traefik.http.routers.apidocs.rule=(Host(`api.traceability.josemiguelmelo.com`) || Host(`api.traceability.localhost`)) && (PathPrefix(`/swagger-ui`) || PathPrefix(`/swagger-resources`) || PathPrefix(`/apidocs`))'
       - "traefik.http.routers.apidocs.entrypoints=web"
+    depends_on:
+      - fluentd
     logging:
       driver: "fluentd"
       options:
@@ -113,11 +136,13 @@ services:
     env_file: .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.userroles.rule=PathPrefix(`/api/v1/roles`)"
+      - "traefik.http.routers.userroles.rule=(Host(`api.traceability.josemiguelmelo.com`) || Host(`api.traceability.localhost`)) && PathPrefix(`/api/v1/roles`)"
       - "traefik.http.middlewares.rolesapi-replacepathregex.replacepathregex.regex=/api/v1/roles(.*)"
       - 'traefik.http.middlewares.rolesapi-replacepathregex.replacepathregex.replacement=/api/v1/roles$1'
       - "traefik.http.routers.userroles.middlewares=rolesapi-replacepathregex"
       - "traefik.http.routers.userroles.entrypoints=web"
+    depends_on:
+      - fluentd
     logging:
       driver: "fluentd"
       options:
@@ -128,11 +153,13 @@ services:
     env_file: .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.usermanagement.rule=PathPrefix(`/api/v1/users`)"
+      - "traefik.http.routers.usermanagement.rule=(Host(`api.traceability.josemiguelmelo.com`) || Host(`api.traceability.localhost`)) && PathPrefix(`/api/v1/users`)"
       - "traefik.http.middlewares.usermngmntapi-replacepathregex.replacepathregex.regex=/api/v1/users(.*)"
       - 'traefik.http.middlewares.usermngmntapi-replacepathregex.replacepathregex.replacement=/api/v1/users$1'
       - "traefik.http.routers.usermanagement.middlewares=usermngmntapi-replacepathregex"
       - "traefik.http.routers.usermanagement.entrypoints=web"
+    depends_on:
+      - fluentd
     logging:
       driver: "fluentd"
       options:
@@ -143,11 +170,13 @@ services:
     env_file: .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.userdiscounts.rule=PathPrefix(`/api/v1/discounts`)"
+      - "traefik.http.routers.userdiscounts.rule=(Host(`api.traceability.josemiguelmelo.com`) || Host(`api.traceability.localhost`)) && PathPrefix(`/api/v1/discounts`)"
       - "traefik.http.middlewares.userdiscountsapi-replacepathregex.replacepathregex.regex=/api/v1/discounts(.*)"
       - 'traefik.http.middlewares.userdiscountsapi-replacepathregex.replacepathregex.replacement=/api/v1/discounts$1'
       - "traefik.http.routers.userdiscounts.middlewares=userdiscountsapi-replacepathregex"
       - "traefik.http.routers.userdiscounts.entrypoints=web"
+    depends_on:
+      - fluentd
     logging:
       driver: "fluentd"
       options:
@@ -177,5 +206,9 @@ services:
     image: docker.elastic.co/kibana/kibana:8.3.2
     links:
       - "elasticsearch"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.logs.rule=Host(`logs.traceability.josemiguelmelo.com`) || Host(`logs.traceability.localhost`)"
+      - "traefik.http.routers.logs.entrypoints=web"
     ports:
       - "5601:5601"

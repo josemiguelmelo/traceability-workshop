@@ -29,7 +29,7 @@ class KafkaConfig {
 
     @Bean
     fun createTopic(): NewTopic {
-        return NewTopic("user-update", 1, 1.toShort())
+        return NewTopic("premium-user-created", 1, 1.toShort())
     }
 
     @Bean
