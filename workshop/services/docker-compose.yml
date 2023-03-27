@@ -1,3 +1,4 @@
+version: "3"
 services:
   jaegerallinone:
     image: jaegertracing/all-in-one:1.25
@@ -117,7 +118,7 @@ services:
       - 7100:8000
   
   apidocs:
-    image: "demo-apidocs"
+    image: "josemiguelmelo/demo-apidocs"
     env_file: .env
     labels:
       - "traefik.enable=true"
@@ -132,7 +133,7 @@ services:
         tag: httpd.access
 
   userroles:
-    image: "demo-userroles"
+    image: "josemiguelmelo/demo-userroles"
     env_file: .env
     labels:
       - "traefik.enable=true"
@@ -149,7 +150,7 @@ services:
         fluentd-address: localhost:24224
         tag: httpd.access
   usermanagement:
-    image: "demo-usermanagement"
+    image: "josemiguelmelo/demo-usermanagement"
     env_file: .env
     labels:
       - "traefik.enable=true"
@@ -166,7 +167,7 @@ services:
         fluentd-address: localhost:24224
         tag: httpd.access
   userdiscounts:
-    image: "demo-userdiscounts"
+    image: "josemiguelmelo/demo-userdiscounts"
     env_file: .env
     labels:
       - "traefik.enable=true"
@@ -206,6 +207,10 @@ services:
     image: docker.elastic.co/kibana/kibana:8.3.2
     links:
       - "elasticsearch"
+    environment:
+      discovery.type: "single-node"
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      xpack.security.enabled: "false"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.logs.rule=Host(`logs.traceability.josemiguelmelo.com`) || Host(`logs.traceability.localhost`)"
