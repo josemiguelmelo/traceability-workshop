@@ -1,4 +1,6 @@
-# Useful links:
+# Exercise
+
+## Useful links:
 
 1. [API](http://api.traceability.localhost/swagger-ui/index.html)
 2. [Jaeger](http://jaeger.traceability.localhost)
@@ -6,24 +8,34 @@
 4. [Logs](http://logs.traceability.localhost/app/discover)
 
 
-# Instructions
+## Instructions
 
 Now, you will be able to explore Jaeger and some of the features it can bring. During the experimentation process, write down findings. (feel free to go further and explore more 💪)
 
+!!! warning
+    Don't forget to open API Documentation and Jaeger from the links above! 😅
+
+    When it comes the time, Kafka UI and Logs also.
+
 The exercises will be splitted into small parts:
 
-## 1. Explore success and error logs
+### 1. Explore success and error logs
 
 In this section, use Jaeger to explore failed and successful requests; which systems were involved on the request; etc.
 In this section, it should only be used the Jaeger service *user-management-application*.
 
-> Explore Jaeger filters to find, for example, requests with errors, specific request paths, etc.
+!!! tip
+    Explore Jaeger filters to find, for example, requests with errors, specific request paths, etc.
 
 For each request below, answer AT LEAST to the following questions:
 
     1. What happened in the background?
     2. How many components were involved in this request?
-    3. What was the error (in case it is applicable) and where did it happen (database, before database, ...)?
+    3. Try to explain what each component is doing.
+    4. What was the error (in case it is applicable)? 
+        Where did it happen (database, before database, ...)?
+    5. Fix the error in the request.
+    6. Retry the list and find requests.
 
 **Requests:**
 
@@ -31,17 +43,24 @@ For each request below, answer AT LEAST to the following questions:
 2. Call find user by id (e.g. use id = 1)
 3. Create a new test user (e.g. username = test)
 
-## 2. Explore performance issues
+### 2. Explore performance issues
 
 In this section, use Jaeger to explore performance of requests. Both Jaeger services *user-management-application* and *user-roles-application* should be used.
  
-> Explore Jaeger filters to find requests with performance issues for each service
+
+!!! tip
+    Explore Jaeger filters to find requests with performance issues for each service
 
 For each request below, answer AT LEAST to the following questions:
 
     1. How many components were involved in this request?
-    2. Which components took more time to answer and increased the response time?
-    3. What action make it increase the overall time? Is it an interaction with another service? It is internal? 🤔
+    2. Try to explain what each component is doing.
+    3. Which components took more time to answer and increased the response time?
+    4. What action made it increase the overall time? 
+        Is it an interaction with another service? It is internal? 🤔
+
+!!! hint
+    Maybe comparing bad performance requests with better ones can give some hints on where performance leak might be.
 
 **Requests:**
 
@@ -54,27 +73,31 @@ For each request below, answer AT LEAST to the following questions:
 
     1. Hint: make some requests to this endpoint
 
-## 3. Deep system exploration
+
+### 3. Deep system exploration
 
 In this section, use Jaeger to explore the entire system. Use this section to explore as much as possible.
  
-> Feel free to take advantage of Jaeger filters to find specific requests, requests taking too much time, services with ERRORS, etc.
+!!! tip
+    Feel free to take advantage of Jaeger filters to find specific requests, requests taking too much time, services with ERRORS, etc.
 
 For each request below, answer AT LEAST to the following questions:
 
     1. How many components were involved in this request?
-    2. Which components took more time to answer and increased the response time?
-    3. What action make it increase the overall time? Is it an interaction with another service? It is internal? 🤔
+    2. Try to explain what each component is doing.
+    3. Which components took more time to answer and increased the response time?
+    3. What action make it increase the overall time?
+       Is it an interaction with another service? It is internal? 🤔
 
 **Instructions:**
 
-1. Make request to the API to create some premium users (you can use the same username 😜)
+1. Make request to the API to create some premium users (you can use the same username for all requests 😜)
 
     1. What happened behind the scenes?
     2. Draw a small architecture/DAG of all services involved and how they interact with each other
     3. Find if any error is occurring in any of the services
 
-2. Now, let's take a look at Kibana to check some logs
+2. Now, let's take a look at Kibana to check some logs (when opening Logs, use *fluentd* to configure the data source)
 
     1. Search for errors. Query: *log: "ERROR"*
 
@@ -95,9 +118,9 @@ For each request below, answer AT LEAST to the following questions:
 As you can see, logs and tracing is closely related to each other.
 
 
-# Bonus points
+## Bonus points
 
-## Kafka
+### Kafka
 
 1. Open Kafka management dashboard and open the *premium-user-created* topic
 
@@ -108,6 +131,6 @@ As you can see, logs and tracing is closely related to each other.
 
         ![Kafka message header](kafka-msg-header.png)
 
-## System Architecture
+### System Architecture
 
 1. Compare the architecture / DAG you created with the one provided by Jaeger (**System Architecture** tab on the top navbar)
