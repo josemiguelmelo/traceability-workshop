@@ -7,7 +7,7 @@
 Run the following commands:
 
 ```bash
-./add_hosts.sh
+sudo ./add_hosts.sh
 ./start.sh
 ```
 
@@ -18,7 +18,7 @@ Run the following commands:
 3. Run the commands:
 
 ```bash
-./add_hosts.sh
+sudo ./add_hosts.sh
 ./start.sh
 ```
 
@@ -31,6 +31,6 @@ Run the following commands:
 
 
 ```bash
-./remove_hosts.sh
+sudo ./remove_hosts.sh
 ./stop.sh
 ```
