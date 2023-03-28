@@ -3,5 +3,6 @@ theme:
 
 markdown_extensions:
   - admonition
+  - attr_list
   
 site_name: Traceability Workshop
