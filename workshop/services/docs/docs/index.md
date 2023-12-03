@@ -136,3 +136,13 @@ As you can see, logs and tracing is closely related to each other.
 ### System Architecture
 
 1. Compare the architecture / DAG you created with the one provided by Jaeger (**System Architecture** tab on the top navbar)
+
+### Implement a new microservice
+
+1. Implement a new API that allows to add todos to a user. A todo can be open or closed. If the user is a premium user, there is no limit in the number of todos. Otherwise, a limit of 10 todos can be in state OPEN. 
+
+    - In this section, explore and try out multiple approaches: HTTP request to user-management API, consume from *premium-user-created* Kafka topic, etc.
+
+    - You can use [these projects](https://github.com/josemiguelmelo/traceability-workshop/tree/master/workshop/microservices) as reference using Spring Boot
+
+    - If you want to try out another framework, you can also try to explore for example Quarkus with OpenTelemetry
