@@ -202,7 +202,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.2
     environment:
       discovery.type: "single-node"
-      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
       xpack.security.enabled: "false"
     ports:
       - "9200:9200"
@@ -213,7 +213,7 @@ services:
       - "elasticsearch"
     environment:
       discovery.type: "single-node"
-      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
       xpack.security.enabled: "false"
     labels:
       - "traefik.enable=true"
