@@ -141,15 +141,15 @@ As you can see, logs and tracing is closely related to each other.
 
 1. During this workshop, Jaeger was used as observability tool. Now, try to add another tool to better understand how the OTEL Collector works.
 
-    - Recommended tool: Grafana Tempo
-    - Useful information for running tempo using docker compose: https://github.com/grafana/tempo/blob/main/example/docker-compose/local/docker-compose.yaml
+    - *Recommended tool:* Grafana Tempo
+    - Useful information for running tempo using docker compose: [Tempo docker compose](https://github.com/grafana/tempo/blob/main/example/docker-compose/local/docker-compose.yaml)
 
-    - Hints:
+    - *Hints:*
 
         - *k6-tracing* and *prometheus* are not required at this point
         - *tempo* doesn't need all ports to be exposed (only tempo related - check comments)
 
-2. Possible solution can be found here: https://github.com/josemiguelmelo/traceability-workshop/tree/grafana-tempo-integration
+2. Possible solution can be found here: [solution](https://github.com/josemiguelmelo/traceability-workshop/tree/grafana-tempo-integration)
 
 ### Implement a new microservice
 

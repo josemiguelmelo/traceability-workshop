@@ -10,7 +10,7 @@ class APIOkhttpRepository(
 ) {
     fun getRandomName() : String? {
         val request: Request = Request.Builder()
-            .url("https://fruityvice.com/api/fruit/all")
+            .url("https://random-data-api.com/api/v2/beers")
             .get()
             .build()
 

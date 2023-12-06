@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7da41918-3ef3-46a8-a854-78f53050b5ed",
+		"_postman_id": "bff8d044-b61c-4a5f-883c-c659a00c744c",
 		"name": "Traceability",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2528356"
@@ -13,7 +13,21 @@
 					"name": "List users",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://api.traceability.localhost/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"api",
+								"traceability",
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
 					},
 					"response": []
 				},
@@ -21,7 +35,22 @@
 					"name": "Get user by id",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://api.traceability.localhost/api/v1/users/1",
+							"protocol": "http",
+							"host": [
+								"api",
+								"traceability",
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"1"
+							]
+						}
 					},
 					"response": []
 				},
@@ -31,12 +60,13 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/api/v1/users?firstName=Test&lastName=User&password=password&username=test",
+							"raw": "http://api.traceability.localhost/api/v1/users?firstName=Test&lastName=User&password=password&username=test",
 							"protocol": "http",
 							"host": [
+								"api",
+								"traceability",
 								"localhost"
 							],
-							"port": "8081",
 							"path": [
 								"api",
 								"v1",
@@ -70,21 +100,23 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/api/v1/users?firstName=Test&lastName=User&password=password&username=test",
+							"raw": "http://api.traceability.localhost/api/v1/users/premium?firstName=Test Premium&lastName=User&password=password&username=testpremium",
 							"protocol": "http",
 							"host": [
+								"api",
+								"traceability",
 								"localhost"
 							],
-							"port": "8081",
 							"path": [
 								"api",
 								"v1",
-								"users"
+								"users",
+								"premium"
 							],
 							"query": [
 								{
 									"key": "firstName",
-									"value": "Test"
+									"value": "Test Premium"
 								},
 								{
 									"key": "lastName",
@@ -96,7 +128,7 @@
 								},
 								{
 									"key": "username",
-									"value": "test"
+									"value": "testpremium"
 								}
 							]
 						}
@@ -112,7 +144,22 @@
 					"name": "Get default role",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://api.traceability.localhost/api/v1/roles/default-role",
+							"protocol": "http",
+							"host": [
+								"api",
+								"traceability",
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"roles",
+								"default-role"
+							]
+						}
 					},
 					"response": []
 				}
@@ -125,7 +172,27 @@
 					"name": "List user discounts",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://api.traceability.localhost/api/v1/discounts?userId=0025854b-da3b-4c01-83e5-b8b6511f086c",
+							"protocol": "http",
+							"host": [
+								"api",
+								"traceability",
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"discounts"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "0025854b-da3b-4c01-83e5-b8b6511f086c"
+								}
+							]
+						}
 					},
 					"response": []
 				}
