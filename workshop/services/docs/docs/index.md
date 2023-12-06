@@ -3,8 +3,7 @@
 ## Useful links:
 
 1. [API](http://api.traceability.localhost/swagger-ui/index.html)
-    1. [Insomnia Collection](./http-collections/Traceability.insomnia.json){:target="_blank" download}
-    2. [Postman Collection](./http-collections/Traceability.postman_collection.json){:target="_blank" download}
+    1. [Postman Collection](./http-collections/Traceability.postman_collection.json){:target="_blank" download}
 2. [Jaeger](http://jaeger.traceability.localhost)
 3. [Kafka UI](http://kafka.traceability.localhost)
 4. [Logs](http://logs.traceability.localhost/app/discover)
