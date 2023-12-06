@@ -137,6 +137,20 @@ As you can see, logs and tracing is closely related to each other.
 
 1. Compare the architecture / DAG you created with the one provided by Jaeger (**System Architecture** tab on the top navbar)
 
+### Add a new Observability Tool
+
+1. During this workshop, Jaeger was used as observability tool. Now, try to add another tool to better understand how the OTEL Collector works.
+
+    - Recommended tool: Grafana Tempo
+    - Useful information for running tempo using docker compose: https://github.com/grafana/tempo/blob/main/example/docker-compose/local/docker-compose.yaml
+
+    - Hints:
+
+        - *k6-tracing* and *prometheus* are not required at this point
+        - *tempo* doesn't need all ports to be exposed (only tempo related - check comments)
+
+2. Possible solution can be found here: https://github.com/josemiguelmelo/traceability-workshop/tree/grafana-tempo-integration
+
 ### Implement a new microservice
 
 1. Implement a new API that allows to add todos to a user. A todo can be open or closed. If the user is a premium user, there is no limit in the number of todos. Otherwise, a limit of 10 todos can be in state OPEN. 
