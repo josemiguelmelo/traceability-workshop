@@ -33,7 +33,7 @@ class QuoteService(
         } ?: throw Exception("Failed to generate quote")
 
         val quote = Quote(
-            quote = quoteFromApi.quote,
+            quote = quoteFromApi.content,
             author = quoteFromApi.author
         )
         return quoteRepository.save(quote)
